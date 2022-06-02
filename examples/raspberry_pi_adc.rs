@@ -1,3 +1,6 @@
+use std::thread::sleep;
+use std::time::Duration;
+
 use linux_embedded_hal::I2cdev;
 use pcf8591_hal::*;
 
@@ -23,10 +26,29 @@ pub fn main() {
         println!("Setting out to 65,535");
         pcf_out.set_value(65_535).expect("failed to write");
         let raw_value = pcf_in_0.value().expect("failed to read");
-        let scaled_value = (raw_value / 65_535) as f32 * pcf_in_0.refernce_voltage();
+        let scaled_value = scale(raw_value, pcf_in_0.reference_voltage());
 
         println!("Pin 0: {:.02}V", scaled_value);
+        sleep(Duration::from_secs(1));
 
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        println!("Setting out to 32767");
+        pcf_out.set_value(32_767).expect("failed to write");
+        let raw_value = pcf_in_0.value().expect("failed to read");
+        let scaled_value = scale(raw_value, pcf_in_0.reference_voltage());
+
+        println!("Pin 0: {:.02}V", scaled_value);
+        sleep(Duration::from_secs(1));
+
+        println!("Setting out to 0");
+        pcf_out.set_value(0).expect("failed to write");
+        let raw_value = pcf_in_0.value().expect("failed to read");
+        let scaled_value = scale(raw_value, pcf_in_0.reference_voltage());
+
+        println!("Pin 0: {:.02}V", scaled_value);
+        sleep(Duration::from_secs(1));
     }
+}
+
+fn scale(raw: u16, voltage: f32) -> f32 {
+    (raw as f32 / 65_535.) * voltage
 }

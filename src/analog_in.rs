@@ -14,7 +14,8 @@ impl<C: i2c::WriteRead> AnalogIn<C> {
 
     pub fn voltage(&self) -> Result<f32, C::Error> {
         let raw_reading = self.value()?;
-        let voltage = ((raw_reading << 8) as f32 / 65_535.) * self.pcf.reference_voltage();
+
+        let voltage = (raw_reading as f32 / 65_535.) * self.pcf.reference_voltage();
         Ok(voltage)
     }
 
@@ -23,7 +24,7 @@ impl<C: i2c::WriteRead> AnalogIn<C> {
         Ok(raw << 8)
     }
 
-    pub fn refernce_voltage(&self) -> f32 {
+    pub fn reference_voltage(&self) -> f32 {
         self.pcf.reference_voltage()
     }
 }

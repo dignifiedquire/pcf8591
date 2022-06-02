@@ -135,7 +135,6 @@ impl<C: i2c::WriteRead> Inner<C> {
         };
 
         self.dac_val = value;
-
         self.clear_buffer();
         self.channel
             .write_read(self.config.address, &command, &mut self.buffer)?;
@@ -157,7 +156,7 @@ impl<C: i2c::WriteRead> Inner<C> {
             [0u8; 2]
         };
 
-        command[0] |= (adc as u8) & 0x3;
+        command[0] |= adc as u8;
 
         self.clear_buffer();
         self.channel
